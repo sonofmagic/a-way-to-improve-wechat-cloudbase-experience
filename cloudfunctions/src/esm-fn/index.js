@@ -1,6 +1,6 @@
-
 import cloud from '~/common/cloud'
-import { getNowFullDate } from '~/common/util/day'
+// import { getNowFullDate } from '~/common/util/day'
+import { getNowFullDate } from '~/common/util/day.esm'
 import { getNanoid } from '~/common/util/nanoid'
 export async function main (event, context) {
   const wxContext = cloud.getWXContext()

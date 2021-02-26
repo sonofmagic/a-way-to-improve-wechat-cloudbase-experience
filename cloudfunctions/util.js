@@ -14,28 +14,28 @@ const pkg = require('./package.json')
 // 不需要 rollup 处理的部分
 const exclude = ['common', 'scripts']
 
-async function getFunctionsAsync (srcPath) {
-  const files = await fsp.readdir(srcPath)
-  const dirs = (
-    await Promise.all(
-      files.map(async (x) => {
-        const fullPath = path.resolve(srcPath, x)
-        const stat = await fsp.stat(fullPath)
-        return {
-          stat,
-          fullPath,
-          filename: x
-        }
-      })
-    )
-  ).filter((x) => {
-    if (exclude.includes(x.filename)) {
-      return false
-    }
-    return x.stat.isDirectory()
-  })
-  return dirs
-}
+// async function getFunctionsAsync (srcPath) {
+//   const files = await fsp.readdir(srcPath)
+//   const dirs = (
+//     await Promise.all(
+//       files.map(async (x) => {
+//         const fullPath = path.resolve(srcPath, x)
+//         const stat = await fsp.stat(fullPath)
+//         return {
+//           stat,
+//           fullPath,
+//           filename: x
+//         }
+//       })
+//     )
+//   ).filter((x) => {
+//     if (exclude.includes(x.filename)) {
+//       return false
+//     }
+//     return x.stat.isDirectory()
+//   })
+//   return dirs
+// }
 
 function getFunctionsSync (srcPath) {
   const files = fs.readdirSync(srcPath)
@@ -142,7 +142,7 @@ async function distributePackageJson (fns) {
 }
 
 module.exports = {
-  getFunctionsAsync,
+  // getFunctionsAsync,
   getFunctionsSync,
   getOption,
   distributePackageJson

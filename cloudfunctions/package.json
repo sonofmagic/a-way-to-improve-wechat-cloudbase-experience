@@ -9,7 +9,7 @@
     "build": "node ./rollup.entry.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "icebreaker",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.13.1",

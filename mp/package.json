@@ -1,0 +1,15 @@
+{
+  "name": "mp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "vue.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "icebreaker",
+  "license": "ISC",
+  "devDependencies": {
+    "copy-webpack-plugin": "^5.1.2"
+  }
+}
