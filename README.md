@@ -33,7 +33,6 @@
 2. `package.json` 中的 `dependencies` , 由于每个云函数都是独立的 `Serverless` 容器 , 导致了一个 `common` 的包(比如 `wx-server-sdk`, `dayjs`,`uuid` 等等)，要在不同的函数里被安装多次。
 
 不得不说，这2个问题，对于整个的开发体验来说，不是很好，不过我们可以自己构建一个 `compile-time` 来改善自己的开发体验。
-<!-- 3. 本地调试据我猜测应该是那种 nodejs `Attach to Remote` 的思路 ,  -->
 
 ## 从一个前端的角度出发
 
@@ -84,7 +83,7 @@ export async function main (event, context) {
 打包后，可见 `dist` 对应云函数中，自动打入了依赖的公共代码。
 
 ### 为了解决第二个不足点：
-<!-- `dependencies`  -->
+
 我把 `package.json` 分为了 **2** 类:
 1. `cloudfunctions` 根目录下的 `package.json`
 2. `src` 对应函数目录下的 `package.json`
@@ -95,7 +94,7 @@ export async function main (event, context) {
 
 而最终 `dist` 目录下打包好的所有函数里面都有一个 `package.json`
 
-它的 `dependencies` 由 1.和2. merge 而成，即：
+它的 `dependencies` 由 **1.** 和 **2.** merge 而成，即：
 
 ```js
 Object.assign({},rootPkgJson.dependencies,targetPkgJson.dependencies)
