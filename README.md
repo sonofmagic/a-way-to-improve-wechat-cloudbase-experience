@@ -2,13 +2,13 @@
 
 > 本篇文章写于 2021-02-27  
 > 鄙人才疏学浅，如有谬误，欢迎指正  
-> 更多的细节在 [**Github源码链接**](https://github.com/sonofmagic/a-way-to-improve-wechat-cloudbase-experience) 中
+> 更多代码的细节在 [**Github源码链接**](https://github.com/sonofmagic/a-way-to-improve-wechat-cloudbase-experience) 中
 
 ## 前言
 
 小程序云开发，作为一种 `BaaS` 场景，在过去的一段时间内发展非常的迅猛。
 
-其中里面最受瞩目的功能，自然是云函数了，他作为一种 `Serverless` 落地的场景，很好的开启了小程序开发者连接服务端编程的大门。
+其中里面最受瞩目的功能，自然是云函数了，它作为一种 `Serverless` 落地的场景，很好的开启了小程序开发者连接服务端编程的大门。
 
 当然，作为一个未来具有很大发展前景的项目，对于目前的非 `js` 开发者, 显得不那么友好，虽然可以依托 `云托管` 功能，使用传统静态语言构建服务，但是毕竟开发小程序用的还是 `js` 嘛。
 
@@ -16,21 +16,21 @@
 
 本篇文章主要面向 **云开发** 中的 Nodejs **云函数** 功能
 
-## 原生开发上存在的不足
+## 云函数原生开发体验的不足
 
-开通云开发，设置个 `cloudfunctionRoot` ,  微信开发者工具就自动识别文件夹和里面的目录了。
+> 开通云开发，设置个 `cloudfunctionRoot` ,  微信开发者工具就自动识别文件夹和里面的目录了。
 
 新建一个云函数可以看到，创建了一个文件夹, 里面有三个文件:
 - config.json
 - index.js
 - package.json
 
-这就是一个最小化的 nodejs 项目。
+显然这就是一个最小化的 nodejs 项目。
 
 然而当我们上传并部署的时候，会显然发现几个问题：
 
 1. 上传并部署虽然可以云端安装 `node_modules` , 但是当我们要引用一个这个项目外部的公共文件时，那个文件在部署时并不会被上传上去。这就会直接导致报错。(上传并部署只上传文件夹里的东西)
-2. `package.json` 中的 `dependencies` , 由于每个云函数都是独立的 Serverless 容器 , 导致了一个 common 的包(比如 `dayjs`,`uuid`)，要在不同的函数里被安装多次。
+2. `package.json` 中的 `dependencies` , 由于每个云函数都是独立的 `Serverless` 容器 , 导致了一个 `common` 的包(比如 `wx-server-sdk`, `dayjs`,`uuid` 等等)，要在不同的函数里被安装多次。
 
 不得不说，这2个问题，对于整个的开发体验来说，不是很好，不过我们可以自己构建一个 `compile-time` 来改善自己的开发体验。
 <!-- 3. 本地调试据我猜测应该是那种 nodejs `Attach to Remote` 的思路 ,  -->
@@ -39,7 +39,7 @@
 
 我们前端经常使用 `webpack` 和 `rollup` 这类的工具。
 
-本文打包用的是 `rollup` , 之前使用它打包过很多的 node 项目 , 当然其他的工具都可以，`Vanilla JS` 当然也可以，见仁见智。
+本文打包用的是 `rollup` , 之前使用它打包过很多的 node 项目 , 当然其它的工具都可以，`Vanilla JS` 当然也可以，见仁见智。
 
 我们在 `cloudfunctions` 目录里 创建 `src` 作为源码目录, `dist` 作为打包后的目录。
 
@@ -56,7 +56,8 @@ npm init -y
 1. 一类是云函数目录
 2. 另外一类是公共代码目录
 
-云函数类似原生的写法，而公共函数可以被云函数引用，这里列举一个改造后的云函数示例：
+云函数类似原生的写法，而公共函数可以被云函数引用，
+这里列举一个改造后的云函数示例：
 
 ```js
 import cloud from '~/common/cloud'
@@ -76,11 +77,11 @@ export async function main (event, context) {
   }
 }
 ```
-> 用 `alias` 后加个 `jsconfig.json`，给 vscode 加智能提示。
+> tip: 用 `alias` 后 , 加个 `jsconfig.json`，给 `vscode` 加智能提示。
 
-这些云函数既可以使用 `cjs` , 也可以使用 `esm` , 并最终通过 babel 编译成 Nodejs 10.15(当前云函数runtime)可直接运行的代码。
-
-打包后，可见 `dist` 对应云函数中，自动打入了依赖的公共代码
+这些云函数既可以使用 `cjs` , 也可以使用 `esm` , 并最终通过 `babel` 编译成 Nodejs 10.15 (当前云函数runtime) 可直接运行的代码。
+ 
+打包后，可见 `dist` 对应云函数中，自动打入了依赖的公共代码。
 
 ### 为了解决第二个不足点：
 <!-- `dependencies`  -->
@@ -100,7 +101,7 @@ export async function main (event, context) {
 Object.assign({},rootPkgJson.dependencies,targetPkgJson.dependencies)
 ```
 
-这种写法同时保证了，里面依赖的优先级级别高于外部。
+这种写法同时保证了，内部依赖的优先级级别**高于**外部。
 
 同时也有一个好处,不需要再在每个云函数里面都定义一个 `package.json`
 
@@ -117,6 +118,7 @@ Object.assign({},rootPkgJson.dependencies,targetPkgJson.dependencies)
 
 > 我也尝试了 `symlink` 的方案,把微信 ide 中的 `cloudfunctions` 指向 `dist`,可是发现 ide 会自动做剪切处理。
 ## 附录：
+
 [方案源码](https://github.com/sonofmagic/a-way-to-improve-wechat-cloudbase-experience)
 
-
+喜欢的话可以点个 `star` , 点个 `follow` 哟。
